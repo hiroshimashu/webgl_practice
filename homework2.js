@@ -4,6 +4,8 @@
     let canvasHeight = null;
     let targetDOM    = null;
     let run = true;
+    let minute_by_sec = 0;
+    let hour_by_sec = 0;
     // three objects
     let scene;
     let camera;
@@ -13,8 +15,9 @@
     let materialPoint;
     let materialLine;
     let materialCircle;
-    //let axesHelper;
-    let group;
+    let sec_group;
+    let minutes_group;
+    let hour_group;
     let particle;
     let point;
     let line;
@@ -33,7 +36,8 @@
     };
 
     const MATERIAL_LINE_PARAM = {
-        color: 0x3399ff
+        color: 0x3399ff,
+        linewidth: 15
     }
 
     const MATERIAL_CIRCLE_PARAM = {
@@ -46,7 +50,9 @@
         targetDOM = document.getElementById('webgl');
 
         scene = new THREE.Scene();
-        group = new THREE.Group();
+        sec_group = new THREE.Group();
+        minutes_group = new THREE.Group();
+        hour_group = new THREE.Group();
         camera = new THREE.PerspectiveCamera(60, canvasWidth / canvasHeight, 0.1, 50.0);
         camera.position.x = 0;
         camera.position.y = 0;
@@ -72,32 +78,43 @@
         scene.add(particle);
 
         // circle
-        geometry = new THREE.CircleGeometry(3, 12);
+        geometry = new THREE.CircleGeometry(4, 12);
         circle = new THREE.Mesh( geometry, materialCircle );
         scene.add(circle);
 
 
 
-        // axes1
+        // axes1(hour)
         geometry = new THREE.Geometry();
         geometry.vertices.push(
             new THREE.Vector3( 0, 0, 1 ),
             new THREE.Vector3( 0, 5, 1 )
         )
         line = new THREE.Line( geometry, materialLine );
-        group.add( line );
+        hour_group.add( line );
 
 
-        // axes2
+        // axes2(minutes)
         geometry = new THREE.Geometry();
         geometry.vertices.push(
             new THREE.Vector3( 0, 0, 1 ),
             new THREE.Vector3( 3, 0, 1 )
         )
         line = new THREE.Line( geometry, materialLine );
-        group.add( line );
+        minutes_group.add( line );
 
-        scene.add( group );
+        //axes3(second)
+        geometry = new THREE.Geometry();
+        geometry.vertices.push(
+            new THREE.Vector3( 0, 0, 1 ),
+            new THREE.Vector3( 1, 1, 1 )
+        )
+        line = new THREE.Line( geometry, materialLine );
+        sec_group.add( line );
+
+        scene.add( hour_group );
+        scene.add( minutes_group );
+        scene.add( sec_group);
         // helper
         //axesHelper = new THREE.AxesHelper(5.0);
         //scene.add(axesHelper);
@@ -115,5 +132,42 @@
         requestAnimationFrame(render);
         renderer.render(scene, camera);
     }
+
+    function rotate_sec() {
+        an_minute_has_passed();
+        an_hour_has_passed();
+        sec_group.rotation.z += Math.PI / 30;
+        minute_by_sec += 1;
+        hour_by_sec += 1;
+    }
+
+    function rotate_minutes() {
+        minutes_group.rotation.z += Math.PI / 30;
+    }
+
+    function rotate_hour() {
+        hour_group.rotation.z += Math.PI / 30;
+    }
+
+    function an_minute_has_passed() {
+        if (minute_by_sec === 60) {
+            rotate_minutes();
+            minute_by_sec = 0;
+        } else {
+            return;
+        }
+    }
+
+    function an_hour_has_passed() {
+        if (hour_by_sec === 3600) {
+            rotate_hour();
+            hour_by_sec = 0;
+        } else {
+            return;
+        }
+    }
+
+
+    window.setInterval(rotate_sec, 1000);
 
 })();

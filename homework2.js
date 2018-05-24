@@ -3,6 +3,14 @@
     let canvasWidth  = null;
     let canvasHeight = null;
     let targetDOM    = null;
+    let now = new Date();
+    let hour_vector;
+    let minute_vector;
+    let sec_vector;
+    // hourは0 ~ 11までの値
+    let hour = now.getHours() % 12;
+    let minute = now.getMinutes();
+    let second = now.getSeconds();
     let run = true;
     let minute_by_sec = 0;
     let hour_by_sec = 0;
@@ -86,9 +94,10 @@
 
         // axes1(hour)
         geometry = new THREE.Geometry();
+        hour_vector = calculateDateVector(hour);
         geometry.vertices.push(
             new THREE.Vector3( 0, 0, 1 ),
-            new THREE.Vector3( 0, 5, 1 )
+            hour_vector
         )
         line = new THREE.Line( geometry, materialLine );
         hour_group.add( line );
@@ -96,18 +105,20 @@
 
         // axes2(minutes)
         geometry = new THREE.Geometry();
+        minute_vector = calculateDateVector(minute);
         geometry.vertices.push(
             new THREE.Vector3( 0, 0, 1 ),
-            new THREE.Vector3( 3, 0, 1 )
+            minute_vector
         )
         line = new THREE.Line( geometry, materialLine );
         minutes_group.add( line );
 
         //axes3(second)
         geometry = new THREE.Geometry();
+        sec_vector = calculateDateVector(second);
         geometry.vertices.push(
             new THREE.Vector3( 0, 0, 1 ),
-            new THREE.Vector3( 1, 1, 1 )
+            sec_vector
         )
         line = new THREE.Line( geometry, materialLine );
         sec_group.add( line );
@@ -125,7 +136,7 @@
             camera.updateProjectionMatrix();
         }, false);
 
-        render()
+        render();
     }, false);
 
     function render() {
@@ -167,6 +178,21 @@
         }
     }
 
+
+    // 時計は反時計回りであることに注意
+    function calculateDateVector(args) {
+        let angle;
+        if (args === hour) {
+            angle = Math.PI / 6 * hour;
+            return new THREE.Vector3(Math.sin(angle), Math.cos(angle), 1);
+        } else if (args ===  minute) {
+            angle = Math.PI / 30 * minute;
+            return new THREE.Vector3( 3 * Math.sin(angle), 3 * Math.cos(angle), 1);
+        } else {
+            angle = Math.PI / 30 * second;
+            return new THREE.Vector3(Math.sin(angle), Math.cos(angle), 1);
+        }
+    }
 
     window.setInterval(rotate_sec, 1000);
 

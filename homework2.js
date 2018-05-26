@@ -147,17 +147,17 @@
     function rotate_sec() {
         an_minute_has_passed();
         an_hour_has_passed();
-        sec_group.rotation.z += Math.PI / 30;
+        sec_group.rotation.z -= Math.PI / 30;
         minute_by_sec += 1;
         hour_by_sec += 1;
     }
 
     function rotate_minutes() {
-        minutes_group.rotation.z += Math.PI / 30;
+        minutes_group.rotation.z -= Math.PI / 30;
     }
 
     function rotate_hour() {
-        hour_group.rotation.z += Math.PI / 30;
+        hour_group.rotation.z -= Math.PI / 30;
     }
 
     function an_minute_has_passed() {

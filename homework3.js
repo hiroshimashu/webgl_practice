@@ -23,6 +23,7 @@
     let moonMaterial;  // 月のマテリアル
     let starSphere;    // 星のメッシュ @@@
     let starMaterial;  // 星のマテリアル @@@
+    let starRad;
     let starGroup;
     // constant variables
     const RENDERER_PARAM = {
@@ -121,13 +122,13 @@
         moonSphere.position.set(2.75, 0.0, 0.0);
         moonSphere.rotation.y = Math.PI;// 面をあらかじめ地球に向きにする
         moonGroup = new THREE.Group();
-        moonGroup.add(moonSphere); // 月をグループに入れて固定する @@@
-        scene.add(moonGroup);      // グループをシーンに追加する @@@
-
+        moonGroup.add(moonSphere); // 月をグループに入れて固定する @@
 
         starSphere.scale.set(0.1, 0.1, 0.1);    // 星の大きさ @@@
         starSphere.position.set(3.5, 0, 0); // 星の初期位置 @@@
         moonGroup.add(starSphere);
+
+        scene.add(moonGroup);
 
         // lights
         directionalLight = new THREE.DirectionalLight(
@@ -165,14 +166,18 @@
 
         // 時間の経過からラジアンを求める
         let rad = nowTime % (Math.PI * 2.0);
-
-        // 月を含むグループを回転させる @@@
-        moonGroup.rotation.y = rad;
+        // 角速度
+        starRad = nowTime % (Math.PI * 2.0) * 2;
+        // 月の座標
+        moonSphere.position.set(2.75 * Math.cos(rad), 0, -2.75 * Math.sin(rad));
+        // 惑星の座標
+        let moonX = moonSphere.position.x;
+        let moonZ = moonSphere.position.z;
+        starSphere.position.set(moonX + 0.75 * Math.cos(starRad), 0, moonZ - 0.75 * Math.sin(starRad));
 
         renderer.render(scene, camera);
-
-
     }
+
 
     /**
      * 二次元ベクトルを正規化する
